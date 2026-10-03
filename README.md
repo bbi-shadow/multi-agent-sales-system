@@ -53,3 +53,4 @@ Không chạy `docker compose down -v` nếu muốn giữ dữ liệu MongoDB v�
 - Hoàn thành dashboard khởi đầu.
 - Đã chuẩn bị thư mục workflow n8n và media.
 - Chưa có Authentication, các module nghiệp vụ còn lại và workflow AI; đây là các bước phát triển kế tiếp.
+============ push moi ===========
