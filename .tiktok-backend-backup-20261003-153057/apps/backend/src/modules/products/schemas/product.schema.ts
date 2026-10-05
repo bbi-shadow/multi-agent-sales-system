@@ -18,10 +18,6 @@ export class Product {
   @Prop({ required: true, trim: true, index: true }) category!: string;
   @Prop({ required: true, min: 0 }) priceVnd!: number;
   @Prop({ required: true }) sourceUrl!: string;
-  @Prop() affiliateUrl?: string;
-  @Prop({ enum: ['NOT_SET', 'READY', 'PAUSED'], default: 'NOT_SET' }) affiliateStatus!: string;
-  @Prop() tiktokProductId?: string;
-  @Prop({ min: 0, max: 100 }) estimatedCommissionRatePct?: number;
   @Prop() imageUrl?: string;
   @Prop({ type: [ProductVariantSchema], default: [] }) variants!: ProductVariant[];
   @Prop() trendEvidenceUrl?: string;

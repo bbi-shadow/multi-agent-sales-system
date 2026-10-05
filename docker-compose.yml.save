@@ -29,11 +29,6 @@ services:
       ADMIN_REVIEW_SECRET: ${ADMIN_REVIEW_SECRET}     
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       GEMINI_MODEL: ${GEMINI_MODEL}
-      VEO_MODEL: ${VEO_MODEL:-veo-3.1-fast-generate-preview}
-      AUTO_RENDER_ENABLED: ${AUTO_RENDER_ENABLED:-false}
-      VIDEO_STORAGE_DIR: /app/storage
-    volumes:
-      - ./storage:/app/storage
     depends_on:
       mongodb:
         condition: service_healthy

@@ -13,8 +13,6 @@ export class CreateProductDto {
   @IsString() @IsNotEmpty() category!: string;
   @IsInt() @Min(0) priceVnd!: number;
   @IsUrl({ require_tld: false }) sourceUrl!: string;
-  @IsOptional() @IsUrl({ require_tld: false }) affiliateUrl?: string;
-  @IsOptional() @IsString() tiktokProductId?: string;
   @IsOptional() @IsUrl({ require_tld: false }) imageUrl?: string;
   @IsArray() @ValidateNested({ each: true }) @Type(() => ProductVariantDto)
   variants!: ProductVariantDto[];

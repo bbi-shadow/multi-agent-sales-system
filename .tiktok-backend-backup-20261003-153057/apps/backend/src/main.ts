@@ -11,9 +11,9 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('SalesMind AI API')
-    .setDescription('TikTok affiliate workspace. Private endpoints use x-review-secret; /health and /go are public.')
+    .setDescription('Multi-Agent Sales System API')
     .setVersion('0.1.0')
-    .addApiKey({ type: 'apiKey', in: 'header', name: 'x-review-secret' }, 'admin-key')
+    .addBearerAuth()
     .build();
   SwaggerModule.setup('api/docs', app, SwaggerModule.createDocument(app, config));
 

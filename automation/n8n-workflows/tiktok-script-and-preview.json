@@ -1,0 +1,133 @@
+{
+  "name": "TikTok affiliate - kịch bản AI và video nháp 30 giây (không tự đăng)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "150c5e0a-611f-4479-b790-128242e718b0",
+      "name": "Chạy thật ngay một lần",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [200, 180]
+    },
+    {
+      "parameters": {"rule": {"interval": [{"field": "days", "daysInterval": 1, "triggerAtHour": 9, "triggerAtMinute": 0}]}},
+      "id": "19d9a8b6-c333-453c-963f-842515790e55",
+      "name": "9 giờ mỗi ngày - backend khóa 2 ngày",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [200, 380]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://backend:4000/api/v1/affiliate/videos/auto-generate",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "ce98b927-92ef-4ae7-b784-951b87072a1b",
+      "name": "Chọn sản phẩm và tạo slot",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [460, 280]
+    },
+    {
+      "parameters": {"jsCode": "return ($input.first().json.draftIds || []).map(id => ({json:{id}}));"},
+      "id": "d754b691-24fb-4e40-a163-8a24dd05d202",
+      "name": "Bản trong slot cần xử lý",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [720, 280]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://backend:4000/api/v1/affiliate/videos/' + $json.id + '/generate-script' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "707ac9b6-adb1-4faa-8e41-e99fd636ab30",
+      "name": "AI chọn góc và viết thoại an toàn",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [980, 280]
+    },
+    {
+      "parameters": {"jsCode": "return $input.all().filter(item => item.json.status === 'SCRIPT_READY').map(item => ({json:{id:item.json.id}}));"},
+      "id": "d6f9a1c2-780c-4e5a-91bd-0959f27bef80",
+      "name": "Chỉ kịch bản AI đã sẵn sàng",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1240, 280]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "={{ 'http://backend:4000/api/v1/affiliate/videos/' + $json.id + '/render' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "9b6f31ba-f637-4bef-b2ef-bbe7bb0dcecf",
+      "name": "Yêu cầu Veo dựng video 30 giây",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [1500, 280]
+    },
+    {
+      "parameters": {"jsCode": "return $input.all().filter(item => item.json.status === 'SUBMITTED').map(item => ({json:{id:item.json.id}}));"},
+      "id": "361d1340-ff60-42bb-ad08-c9ce8fe6901f",
+      "name": "Chỉ job đang dựng",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1760, 280]
+    },
+    {
+      "parameters": {"amount": 60, "unit": "seconds"},
+      "id": "c43ca992-09d3-4c9c-b7ab-24f288742e0a",
+      "name": "Chờ 60 giây",
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [2020, 280],
+      "webhookId": "c43ca992-09d3-4c9c-b7ab-24f288742e0a"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'http://backend:4000/api/v1/affiliate/videos/' + $json.id + '/render-status' }}",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "options": {}
+      },
+      "id": "fb4b998d-c112-4324-acd2-fef2b2fa7da6",
+      "name": "Kiểm tra Veo và lưu MP4",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [2280, 280]
+    },
+    {
+      "parameters": {"jsCode": "return $input.all().filter(item => item.json.status === 'SUBMITTED').map(item => ({json:{id:item.json.id}}));"},
+      "id": "4b2a59a0-a69b-40d3-b424-3549dde19555",
+      "name": "Chưa xong thì chờ tiếp",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [2540, 280]
+    }
+  ],
+  "connections": {
+    "Chạy thật ngay một lần": {"main": [[{"node": "Chọn sản phẩm và tạo slot", "type": "main", "index": 0}]]},
+    "9 giờ mỗi ngày - backend khóa 2 ngày": {"main": [[{"node": "Chọn sản phẩm và tạo slot", "type": "main", "index": 0}]]},
+    "Chọn sản phẩm và tạo slot": {"main": [[{"node": "Bản trong slot cần xử lý", "type": "main", "index": 0}]]},
+    "Bản trong slot cần xử lý": {"main": [[{"node": "AI chọn góc và viết thoại an toàn", "type": "main", "index": 0}]]},
+    "AI chọn góc và viết thoại an toàn": {"main": [[{"node": "Chỉ kịch bản AI đã sẵn sàng", "type": "main", "index": 0}]]},
+    "Chỉ kịch bản AI đã sẵn sàng": {"main": [[{"node": "Yêu cầu Veo dựng video 30 giây", "type": "main", "index": 0}]]},
+    "Yêu cầu Veo dựng video 30 giây": {"main": [[{"node": "Chỉ job đang dựng", "type": "main", "index": 0}]]},
+    "Chỉ job đang dựng": {"main": [[{"node": "Chờ 60 giây", "type": "main", "index": 0}]]},
+    "Chờ 60 giây": {"main": [[{"node": "Kiểm tra Veo và lưu MP4", "type": "main", "index": 0}]]},
+    "Kiểm tra Veo và lưu MP4": {"main": [[{"node": "Chưa xong thì chờ tiếp", "type": "main", "index": 0}]]},
+    "Chưa xong thì chờ tiếp": {"main": [[{"node": "Chờ 60 giây", "type": "main", "index": 0}]]}
+  },
+  "settings": {"executionOrder": "v1", "timezone": "Asia/Ho_Chi_Minh"},
+  "active": false,
+  "pinData": {}
+}
